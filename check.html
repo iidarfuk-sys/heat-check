@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>熱中症予防 体調チェック表</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --g-dark: #1a472a;
+      --g-mid:  #2d6a4f;
+      --g-light: #d8f3dc;
+      --g-pale:  #f0fff4;
+      --sat-bg:  #bbdefb;
+      --sat-hd:  #1565c0;
+      --sun-bg:  #ffcdd2;
+      --sun-hd:  #c62828;
+    }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
+      background: #f4f6f0;
+      min-height: 100vh;
+    }
+
+    /* ── Control Panel ── */
+    #panel {
+      background: var(--g-dark);
+      color: #fff;
+      padding: 10px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    }
+
+    .panel-label {
+      font-size: 0.72rem;
+      opacity: 0.65;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .week-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    #week-title {
+      flex: 1;
+      text-align: center;
+      font-size: clamp(0.78rem, 2.4vw, 1.05rem);
+      font-weight: bold;
+      min-width: 180px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: filter .15s;
+    }
+    button:hover  { filter: brightness(1.12); }
+    button:active { filter: brightness(0.88); }
+
+    .btn-nav   { background: #4a8c6a; color: #fff; }
+    .btn-today { background: #52b788; color: #fff; }
+    .btn-print { background: #e76f51; color: #fff; }
+    .btn-add   { background: var(--g-mid); color: #fff; }
+
+    .btn-ud   { background: #b7e4c7; color: var(--g-dark); padding: 2px 5px; font-size: 0.68rem; border-radius: 4px; }
+    .btn-edit { background: #ffe066; color: #555;          padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; }
+    .btn-del  { background: #ffc1c1; color: #c62828;       padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; }
+
+    /* ── Name Manager ── */
+    #name-mgr {
+      background: #fff;
+      border-bottom: 3px solid var(--g-mid);
+      padding: 10px 14px;
+    }
+
+    #name-mgr h2 {
+      font-size: 0.88rem;
+      color: var(--g-dark);
+      margin-bottom: 8px;
+    }
+
+    .name-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: var(--g-light);
+      border: 1px solid #74c69d;
+      border-radius: 20px;
+      padding: 3px 10px 3px 6px;
+      font-size: 0.82rem;
+    }
+
+    .chip-name { margin: 0 4px; }
+
+    .add-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .add-row input {
+      padding: 6px 10px;
+      border: 1.5px solid #aaa;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      width: 160px;
+    }
+    .add-row input:focus { outline: 2px solid var(--g-mid); border-color: var(--g-mid); }
+
+    /* ── Table ── */
+    #table-outer {
+      overflow-x: auto;
+      padding: 14px;
+    }
+
+    table {
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    thead th {
+      background: var(--g-mid);
+      color: #fff;
+      padding: 8px 10px;
+      text-align: center;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      border: 1px solid #1b5e3e;
+    }
+    thead th.sat { background: var(--sat-hd); border-color: #0d47a1; }
+    thead th.sun { background: var(--sun-hd); border-color: #b71c1c; }
+
+    tbody td { border: 1px solid #c8e6c9; vertical-align: middle; }
+
+    .td-name {
+      background: var(--g-mid);
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      padding: 4px 14px;
+      white-space: nowrap;
+      border: 1px solid #1b5e3e;
+      font-size: 0.85rem;
+    }
+
+    .td-label {
+      background: var(--g-pale);
+      color: #1b5e3e;
+      font-weight: 500;
+      font-size: 0.76rem;
+      padding: 4px 10px;
+      white-space: nowrap;
+      border-color: #a5d6a7;
+    }
+
+    .td-box {
+      background: var(--g-pale);
+      text-align: center;
+      padding: 5px 8px;
+      min-width: 46px;
+      border-color: #a5d6a7;
+    }
+    .td-box.sat { background: var(--sat-bg); border-color: #90caf9; }
+    .td-box.sun { background: var(--sun-bg); border-color: #ef9a9a; }
+
+    .hbox {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border: 1.5px solid #666;
+      border-radius: 2px;
+    }
+
+    /* separator between persons */
+    .td-sep {
+      height: 6px;
+      padding: 0;
+      border: none;
+      background: #e8f5e9;
+    }
+
+    /* thick bottom border on last check row of each person */
+    tr.row-last .td-label,
+    tr.row-last .td-box  { border-bottom: 2.5px solid #74c69d; }
+    tr.row-last .td-box.sat { border-bottom-color: #90caf9; }
+    tr.row-last .td-box.sun { border-bottom-color: #ef9a9a; }
+
+    /* ── Print ── */
+    @media print {
+      @page { size: A4 landscape; margin: 8mm; }
+      #panel, #name-mgr { display: none !important; }
+      body { background: #fff; }
+      #table-outer { padding: 0; overflow: visible; }
+      table { box-shadow: none; width: 100%; }
+      .hbox { width: 20px; height: 20px; border-color: #333; }
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 640px) {
+      #week-title { min-width: 0; }
+      #table-outer { padding: 6px; }
+      .add-row input { width: 130px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ====== Control Panel ====== -->
+<div id="panel">
+  <div class="panel-label">熱中症予防 体調チェック表</div>
+  <div class="week-row">
+    <button class="btn-nav" onclick="changeWeek(-1)">◀ 前の週</button>
+    <div id="week-title"></div>
+    <button class="btn-nav" onclick="changeWeek(1)">次の週 ▶</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn-today" onclick="goToCurrentWeek()">今週に戻す</button>
+    <button class="btn-print" onclick="window.print()">🖨️ 印刷・PDF保存</button>
+  </div>
+</div>
+
+<!-- ====== Name Manager ====== -->
+<div id="name-mgr">
+  <h2>👥 パートさん管理</h2>
+  <div id="name-chips" class="name-chips"></div>
+  <div class="add-row">
+    <input id="new-name" type="text" placeholder="名前を入力" maxlength="20">
+    <button class="btn-add" onclick="addMember()">＋ 追加</button>
+  </div>
+</div>
+
+<!-- ====== Check Table ====== -->
+<div id="table-outer">
+  <table id="check-table"></table>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var ITEMS    = ['水分・食事', '睡眠', '体の異変なし'];
+  var DAY_JP   = ['月', '火', '水', '木', '金', '土', '日'];
+  var STOR_KEY = 'heatcheck_v1';
+  var DEFAULTS = ['礒村', '音光寺', '原', '徳永', '野口', '野中', '吉田'];
+
+  var weekOffset = 0;
+  var members    = loadMembers();
+
+  /* ── Storage ── */
+  function loadMembers() {
+    try {
+      var raw = localStorage.getItem(STOR_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (_) {}
+    return DEFAULTS.slice();
+  }
+
+  function saveMembers() {
+    try { localStorage.setItem(STOR_KEY, JSON.stringify(members)); } catch (_) {}
+  }
+
+  /* ── Date helpers ── */
+  function getMonday(offset) {
+    var d   = new Date();
+    var dow = d.getDay();
+    var diff = (dow === 0) ? -6 : 1 - dow;
+    d.setDate(d.getDate() + diff + offset * 7);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  function fmtDate(d) {
+    return (d.getMonth() + 1) + '/' + d.getDate();
+  }
+
+  /* ── Week navigation ── */
+  window.changeWeek = function (delta) { weekOffset += delta; render(); };
+  window.goToCurrentWeek = function () { weekOffset = 0; render(); };
+
+  /* ── Member CRUD ── */
+  window.addMember = function () {
+    var input = document.getElementById('new-name');
+    var name  = input.value.trim();
+    if (!name) { input.focus(); return; }
+    if (members.indexOf(name) !== -1) {
+      alert('「' + name + '」は既に登録されています');
+      return;
+    }
+    members.push(name);
+    saveMembers();
+    input.value = '';
+    render();
+  };
+
+  window.delMember = function (i) {
+    if (!confirm('「' + members[i] + '」を削除しますか？')) return;
+    members.splice(i, 1);
+    saveMembers();
+    render();
+  };
+
+  window.editMember = function (i) {
+    var name = prompt('「' + members[i] + '」の名前を変更:', members[i]);
+    if (name === null || !name.trim()) return;
+    members[i] = name.trim();
+    saveMembers();
+    render();
+  };
+
+  window.moveMember = function (i, dir) {
+    var j = i + dir;
+    if (j < 0 || j >= members.length) return;
+    var tmp = members[i]; members[i] = members[j]; members[j] = tmp;
+    saveMembers();
+    render();
+  };
+
+  /* ── Escape HTML ── */
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Render: name chips ── */
+  function renderChips() {
+    var el = document.getElementById('name-chips');
+    el.innerHTML = '';
+    members.forEach(function (name, i) {
+      var chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.innerHTML =
+        '<button class="btn-ud" onclick="moveMember(' + i + ',-1)" title="上へ">▲</button>' +
+        '<button class="btn-ud" onclick="moveMember(' + i + ',1)"  title="下へ">▼</button>' +
+        '<span class="chip-name">' + esc(name) + '</span>' +
+        '<button class="btn-edit" onclick="editMember(' + i + ')" title="編集">✏</button>' +
+        '<button class="btn-del"  onclick="delMember('  + i + ')" title="削除">✕</button>';
+      el.appendChild(chip);
+    });
+  }
+
+  /* ── Render: check table ── */
+  function renderTable() {
+    var monday = getMonday(weekOffset);
+    var days   = [];
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      days.push(d);
+    }
+
+    /* Week title */
+    var end = days[6];
+    var y   = monday.getFullYear();
+    var m1  = monday.getMonth() + 1, d1 = monday.getDate();
+    var m2  = end.getMonth()    + 1, d2 = end.getDate();
+    var title = (m1 === m2)
+      ? y + '年 ' + m1 + '月' + d1 + '日（月）〜' + d2 + '日（日）'
+      : y + '年 ' + m1 + '月' + d1 + '日（月）〜' + m2 + '月' + d2 + '日（日）';
+    document.getElementById('week-title').textContent = title;
+
+    /* Table */
+    var tbl = document.getElementById('check-table');
+    tbl.innerHTML = '';
+
+    /* Header */
+    var thead = tbl.createTHead();
+    var hrow  = thead.insertRow();
+
+    function addTh(row, html, cls) {
+      var th = document.createElement('th');
+      th.innerHTML = html;
+      if (cls) th.className = cls;
+      row.appendChild(th);
+    }
+
+    addTh(hrow, '名前');
+    addTh(hrow, 'チェック項目');
+    days.forEach(function (d, i) {
+      var cls = (i === 5) ? 'sat' : (i === 6) ? 'sun' : '';
+      addTh(hrow, DAY_JP[i] + '<br>' + fmtDate(d), cls);
+    });
+
+    /* Body */
+    var tbody = tbl.createTBody();
+    members.forEach(function (name, mi) {
+      ITEMS.forEach(function (item, ci) {
+        var row  = tbody.insertRow();
+        var last = (ci === ITEMS.length - 1);
+        if (last) row.className = 'row-last';
+
+        /* Name cell (rowspan=3) */
+        if (ci === 0) {
+          var nameTd = document.createElement('td');
+          nameTd.className = 'td-name';
+          nameTd.rowSpan   = ITEMS.length;
+          nameTd.textContent = name;
+          row.appendChild(nameTd);
+        }
+
+        /* Label */
+        var lbl = document.createElement('td');
+        lbl.className    = 'td-label';
+        lbl.textContent  = item;
+        row.appendChild(lbl);
+
+        /* Box cells per day */
+        days.forEach(function (_, di) {
+          var td = document.createElement('td');
+          td.className = 'td-box' + (di === 5 ? ' sat' : di === 6 ? ' sun' : '');
+          td.innerHTML = '<span class="hbox"></span>';
+          row.appendChild(td);
+        });
+      });
+
+      /* Separator row between persons */
+      if (mi < members.length - 1) {
+        var sep  = tbody.insertRow();
+        var sepTd = document.createElement('td');
+        sepTd.className = 'td-sep';
+        sepTd.colSpan   = 2 + 7;
+        sep.appendChild(sepTd);
+      }
+    });
+  }
+
+  /* ── Main render ── */
+  function render() {
+    renderChips();
+    renderTable();
+  }
+
+  document.getElementById('new-name').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') window.addMember();
+  });
+
+  render();
+}());
+</script>
+</body>
+</html>
