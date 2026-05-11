@@ -315,25 +315,25 @@
         width: 100%;
         table-layout: fixed;
         font-size: 7pt;
-        line-height: 1.1;
+        line-height: 1.05;
       }
 
-      thead th { padding: 2pt 3pt; font-size: 6.5pt; }
+      thead th { padding: 1pt 2pt; font-size: 6.5pt; }
+      thead th:first-child  { width: 10%; }
+      thead th:nth-child(2) { width: 22%; }
 
-      .td-name  { padding: 1.5pt 3pt; font-size: 7pt; width: 13%; }
-      .td-label { padding: 1.5pt 3pt; font-size: 6.5pt; white-space: normal; width: 20%; }
-      .td-box   { padding: 1.5pt 2pt; min-width: 0; }
-
-      thead th:first-child { width: 13%; }
+      .td-name  { padding: 1pt 2pt; font-size: 8.5pt; width: 10%; }
+      .td-label { padding: 1pt 2pt; font-size: 6.5pt; white-space: nowrap; width: 22%; }
+      .td-box   { padding: 1pt 1.5pt; min-width: 0; }
 
       .td-sep { height: 2pt; }
 
-      .hbox { width: 11pt; height: 11pt; border-color: #333; }
+      .hbox { width: 9pt; height: 9pt; border-color: #333; }
 
       /* ── Memo ── */
       #print-memo {
         padding: 0;
-        margin-top: 5mm;
+        margin-top: 3mm;
         border-top: none;
         gap: 3pt;
         align-items: flex-end;
@@ -350,7 +350,7 @@
       /* ── Bottom note ── */
       #print-bottom-note {
         padding: 0;
-        margin-top: 4mm;
+        margin-top: 3mm;
         font-size: 7pt;
         color: #333;
       }
@@ -363,7 +363,7 @@
         margin-bottom: 2mm;
       }
 
-      .guide-item { font-size: 6pt; line-height: 1.4; margin: 0; }
+      .guide-item { font-size: 6pt; line-height: 1.3; margin: 0; }
     }
 
     /* ── Mobile ── */
