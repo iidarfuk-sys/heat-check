@@ -255,7 +255,14 @@
       #panel, #name-mgr { display: none !important; }
       body { background: #fff; }
 
-      #table-outer { padding: 0; overflow: visible; }
+      /* zoom でスクリーンサイズのまま印刷されても1ページに収まるよう縮小。
+         width: 133% で縮小後も横幅がページ幅いっぱいになるよう補正。 */
+      #table-outer {
+        padding: 0;
+        overflow: visible;
+        zoom: 0.75;
+        width: 133%;
+      }
 
       /* ── Print header ── */
       #print-title {
@@ -384,16 +391,16 @@
 
   <table id="check-table"></table>
 
-</div>
+  <!-- 備考・注意書き：#table-outer 内に置くことで印刷時も確実に同ページに含まれる -->
+  <div id="print-memo">
+    <span class="memo-label">備考：</span>
+    <span class="memo-line-el"></span>
+  </div>
 
-<!-- ====== 備考・注意書き（画面・印刷共通） ====== -->
-<div id="print-memo">
-  <span class="memo-label">備考：</span>
-  <span class="memo-line-el"></span>
-</div>
+  <div id="print-bottom-note">
+    熱中症の症状（頭痛・めまい・吐き気・倦怠感）を感じたら、無理せずに申し出てください。
+  </div>
 
-<div id="print-bottom-note">
-  熱中症の症状（頭痛・めまい・吐き気・倦怠感）を感じたら、無理せずに申し出てください。
 </div>
 
 <script>
