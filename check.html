@@ -217,10 +217,46 @@
     @media print {
       @page { size: A4 landscape; margin: 8mm; }
       #panel, #name-mgr { display: none !important; }
+
       body { background: #fff; }
+
       #table-outer { padding: 0; overflow: visible; }
-      table { box-shadow: none; width: 100%; }
-      .hbox { width: 20px; height: 20px; border-color: #333; }
+
+      table {
+        box-shadow: none;
+        width: 100%;
+        table-layout: fixed;
+        font-size: 7.5pt;
+      }
+
+      thead th {
+        padding: 3px 4px;
+        font-size: 7pt;
+      }
+
+      .td-name  { padding: 2px 5px; font-size: 7.5pt; }
+      .td-label { padding: 2px 5px; font-size: 6.5pt; white-space: normal; width: 18%; }
+      .td-box   { padding: 2px 3px; min-width: 0; }
+
+      /* 名前列を固定幅に */
+      thead th:first-child,
+      .td-name { width: 12%; }
+
+      .td-sep { height: 2px; }
+
+      .hbox { width: 15px; height: 15px; border-color: #333; }
+
+      /* 印刷タイトル */
+      #print-title { display: block !important; }
+    }
+
+    #print-title {
+      display: none;
+      text-align: center;
+      font-size: 11pt;
+      font-weight: bold;
+      margin-bottom: 4mm;
+      color: #1a472a;
     }
 
     /* ── Mobile ── */
@@ -259,6 +295,7 @@
 
 <!-- ====== Check Table ====== -->
 <div id="table-outer">
+  <div id="print-title">熱中症予防 体調チェック表　<span id="print-week"></span></div>
   <table id="check-table"></table>
 </div>
 
@@ -384,6 +421,8 @@
       ? y + '年 ' + m1 + '月' + d1 + '日（月）〜' + d2 + '日（日）'
       : y + '年 ' + m1 + '月' + d1 + '日（月）〜' + m2 + '月' + d2 + '日（日）';
     document.getElementById('week-title').textContent = title;
+    var pw = document.getElementById('print-week');
+    if (pw) pw.textContent = title;
 
     /* Table */
     var tbl = document.getElementById('check-table');
