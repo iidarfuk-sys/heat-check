@@ -220,10 +220,18 @@
 
       body { background: #fff; }
 
-      #table-outer { padding: 0; overflow: visible; }
+      /* zoom で全体を縮小し1ページに収める。
+         zoom はレイアウトに影響するため transform と違い改ページ位置も正確に変わる。
+         width: 133% で縮小後の横幅がページ幅いっぱいになるよう補正。 */
+      #table-outer {
+        padding: 0;
+        overflow: visible;
+        zoom: 0.75;
+        width: 133%;
+      }
 
       /* A4 landscape 可用高 ≈ 194mm
-         28行(ヘッダ1+データ21+区切り6)をタイトル込みで収める */
+         zoom 0.75 適用後: 7名×3行+区切り+タイトルが約150mm以内に収まる */
       table {
         box-shadow: none;
         width: 100%;
