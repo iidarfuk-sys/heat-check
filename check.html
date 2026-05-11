@@ -217,6 +217,22 @@
     /* ── Print header (screen: hidden) ── */
     #print-title { display: none; }
 
+    /* ── Check guide ── */
+    #check-guide {
+      background: #fffde7;
+      border-left: 3px solid #f9a825;
+      padding: 8px 12px;
+      margin: 0 0 10px;
+    }
+
+    .guide-item {
+      font-size: 0.78rem;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .guide-item strong { color: var(--g-dark); }
+
     /* ── Memo section ── */
     #print-memo {
       display: flex;
@@ -255,8 +271,6 @@
       #panel, #name-mgr { display: none !important; }
       body { background: #fff; }
 
-      /* zoom でスクリーンサイズのまま印刷されても1ページに収まるよう縮小。
-         width: 111% で縮小後も横幅がページ幅いっぱいになるよう補正。 */
       #table-outer {
         padding: 0;
         overflow: visible;
@@ -341,6 +355,16 @@
         font-size: 7pt;
         color: #333;
       }
+
+      /* ── Check guide (print: compact 1行/項目) ── */
+      #check-guide {
+        background: none;
+        border-left: 1.5px solid #888;
+        padding: 1px 5px;
+        margin-bottom: 2mm;
+      }
+
+      .guide-item { font-size: 6pt; line-height: 1.5; margin: 0; }
     }
 
     /* ── Mobile ── */
@@ -348,6 +372,11 @@
       #week-title { min-width: 0; }
       #table-outer { padding: 6px; }
       .add-row input { width: 130px; }
+      /* 日曜列が画面外に出ないよう各セルを縮小 */
+      .td-box   { min-width: 30px; padding: 4px 2px; }
+      .hbox     { width: 18px; height: 18px; }
+      .td-name  { padding: 4px 8px; }
+      .td-label { padding: 4px 5px; font-size: 0.7rem; }
     }
   </style>
 </head>
@@ -389,6 +418,13 @@
     <span id="print-week"></span>
   </div>
 
+  <!-- チェック項目の説明（画面・印刷共通） -->
+  <div id="check-guide">
+    <p class="guide-item"><strong>① 水分・食事</strong>：今朝、水分と食事をしっかり取りましたか？（熱中症の最大のリスク要因。前夜からの脱水も防げます）</p>
+    <p class="guide-item"><strong>② 睡眠</strong>：昨夜、十分に眠れましたか？（睡眠不足は体温調節機能を著しく低下させます）</p>
+    <p class="guide-item"><strong>③ 体の異変なし</strong>：頭痛・めまい・吐き気など、体の不調はありませんか？（症状がない場合に○をつけてください）</p>
+  </div>
+
   <table id="check-table"></table>
 
   <!-- 備考・注意書き：#table-outer 内に置くことで印刷時も確実に同ページに含まれる -->
@@ -415,7 +451,6 @@
   var weekOffset = 0;
   var members    = loadMembers();
 
-  /* ── Storage ── */
   function loadMembers() {
     try {
       var raw = localStorage.getItem(STOR_KEY);
@@ -428,7 +463,6 @@
     try { localStorage.setItem(STOR_KEY, JSON.stringify(members)); } catch (_) {}
   }
 
-  /* ── Date helpers ── */
   function getMonday(offset) {
     var d   = new Date();
     var dow = d.getDay();
@@ -446,11 +480,9 @@
     return (d.getMonth() + 1) + '月' + d.getDate() + '日';
   }
 
-  /* ── Week navigation ── */
   window.changeWeek = function (delta) { weekOffset += delta; render(); };
   window.goToCurrentWeek = function () { weekOffset = 0; render(); };
 
-  /* ── Member CRUD ── */
   window.addMember = function () {
     var input = document.getElementById('new-name');
     var name  = input.value.trim();
@@ -488,12 +520,10 @@
     render();
   };
 
-  /* ── Escape HTML ── */
   function esc(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  /* ── Render: name chips ── */
   function renderChips() {
     var el = document.getElementById('name-chips');
     el.innerHTML = '';
@@ -510,7 +540,6 @@
     });
   }
 
-  /* ── Render: check table ── */
   function renderTable() {
     var monday = getMonday(weekOffset);
     var days   = [];
@@ -520,7 +549,6 @@
       days.push(d);
     }
 
-    /* Week titles */
     var end = days[6];
     var y   = monday.getFullYear();
     var DAY_FULL = ['（日）','（月）','（火）','（水）','（木）','（金）','（土）','（日）'];
@@ -534,11 +562,9 @@
     var pw = document.getElementById('print-week');
     if (pw) pw.textContent = longTitle;
 
-    /* Table */
     var tbl = document.getElementById('check-table');
     tbl.innerHTML = '';
 
-    /* Header */
     var thead = tbl.createTHead();
     var hrow  = thead.insertRow();
 
@@ -556,7 +582,6 @@
       addTh(hrow, fmtDate(d) + '<br>' + DAY_JP[i], cls);
     });
 
-    /* Body */
     var tbody = tbl.createTBody();
     members.forEach(function (name, mi) {
       ITEMS.forEach(function (item, ci) {
@@ -595,7 +620,6 @@
     });
   }
 
-  /* ── Main render ── */
   function render() {
     renderChips();
     renderTable();
