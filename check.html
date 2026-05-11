@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>熱中症予防 体調チェック表</title>
+  <title>熱中症予防 出勤時体調チェック表</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -199,7 +199,6 @@
       border-radius: 2px;
     }
 
-    /* separator between persons */
     .td-sep {
       height: 6px;
       padding: 0;
@@ -207,66 +206,131 @@
       background: #e8f5e9;
     }
 
-    /* thick bottom border on last check row of each person */
     tr.row-last .td-label,
     tr.row-last .td-box  { border-bottom: 2.5px solid #74c69d; }
     tr.row-last .td-box.sat { border-bottom-color: #90caf9; }
     tr.row-last .td-box.sun { border-bottom-color: #ef9a9a; }
 
+    /* ── Print header (screen: hidden) ── */
+    #print-title { display: none; }
+
+    /* ── Memo section ── */
+    #print-memo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px 8px;
+      background: #fff;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .memo-label {
+      font-size: 0.86rem;
+      font-weight: bold;
+      color: var(--g-dark);
+      white-space: nowrap;
+    }
+
+    .memo-line-el {
+      flex: 1;
+      border-bottom: 1.5px solid #999;
+      min-height: 22px;
+    }
+
+    /* ── Bottom note ── */
+    #print-bottom-note {
+      text-align: center;
+      font-size: 0.76rem;
+      color: #666;
+      padding: 6px 14px 20px;
+      background: #fff;
+    }
+
     /* ── Print ── */
     @media print {
-      @page { size: A4 landscape; margin: 8mm; }
+      @page { size: A4 portrait; margin: 10mm 12mm; }
       #panel, #name-mgr { display: none !important; }
-
       body { background: #fff; }
 
-      /* zoom で全体を縮小し1ページに収める。
-         zoom はレイアウトに影響するため transform と違い改ページ位置も正確に変わる。
-         width: 133% で縮小後の横幅がページ幅いっぱいになるよう補正。 */
-      #table-outer {
-        padding: 0;
-        overflow: visible;
-        zoom: 0.75;
-        width: 133%;
+      #table-outer { padding: 0; overflow: visible; }
+
+      /* ── Print header ── */
+      #print-title {
+        display: block !important;
+        margin-bottom: 2mm;
       }
 
-      /* A4 landscape 可用高 ≈ 194mm
-         zoom 0.75 適用後: 7名×3行+区切り+タイトルが約150mm以内に収まる */
+      #pt-row1 {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 0.5mm;
+      }
+
+      #pt-main {
+        font-size: 12pt;
+        font-weight: bold;
+        color: #1a472a;
+      }
+
+      #pt-legend {
+        font-size: 6.5pt;
+        color: #c62828;
+        text-align: right;
+      }
+
+      #print-week {
+        display: block;
+        font-size: 8pt;
+        color: #444;
+        margin-bottom: 2.5mm;
+      }
+
+      /* ── Table ── */
       table {
         box-shadow: none;
         width: 100%;
         table-layout: fixed;
-        font-size: 6.5pt;
-        line-height: 1.1;
+        font-size: 7pt;
+        line-height: 1.15;
       }
 
-      thead th {
-        padding: 2px 4px;
-        font-size: 6pt;
-        line-height: 1.1;
+      thead th { padding: 3px 4px; font-size: 6.5pt; }
+
+      .td-name  { padding: 2px 4px; font-size: 7pt; width: 13%; }
+      .td-label { padding: 2px 4px; font-size: 6.5pt; white-space: normal; width: 20%; }
+      .td-box   { padding: 2px 3px; min-width: 0; }
+
+      thead th:first-child { width: 13%; }
+
+      .td-sep { height: 2px; }
+
+      .hbox { width: 14px; height: 14px; border-color: #333; }
+
+      /* ── Memo ── */
+      #print-memo {
+        padding: 0;
+        margin-top: 5mm;
+        border-top: none;
+        gap: 4px;
+        align-items: flex-end;
       }
 
-      .td-name  { padding: 1px 4px; font-size: 6.5pt; width: 12%; }
-      .td-label { padding: 1px 4px; font-size: 6pt; white-space: normal; width: 18%; }
-      .td-box   { padding: 1px 2px; min-width: 0; }
+      .memo-label { font-size: 8pt; color: #000; }
 
-      thead th:first-child { width: 12%; }
+      .memo-line-el {
+        border-bottom: 0.5px solid #333;
+        min-height: 0;
+        height: 12px;
+      }
 
-      .td-sep { height: 1px; }
-
-      .hbox { width: 13px; height: 13px; border-color: #333; }
-
-      /* 印刷タイトル */
-      #print-title { display: block !important; }
-    }
-
-    #print-title {
-      display: none;
-      text-align: center;
-      font-size: 9pt;
-      font-weight: bold;
-      margin-bottom: 2mm;
-      color: #1a472a;
+      /* ── Bottom note ── */
+      #print-bottom-note {
+        padding: 0;
+        margin-top: 4mm;
+        font-size: 7pt;
+        color: #333;
+      }
     }
 
     /* ── Mobile ── */
@@ -281,7 +345,7 @@
 
 <!-- ====== Control Panel ====== -->
 <div id="panel">
-  <div class="panel-label">熱中症予防 体調チェック表</div>
+  <div class="panel-label">熱中症予防 出勤時体調チェック表</div>
   <div class="week-row">
     <button class="btn-nav" onclick="changeWeek(-1)">◀ 前の週</button>
     <div id="week-title"></div>
@@ -305,8 +369,28 @@
 
 <!-- ====== Check Table ====== -->
 <div id="table-outer">
-  <div id="print-title">熱中症予防 体調チェック表　<span id="print-week"></span></div>
+
+  <!-- 印刷時のみ表示するヘッダー -->
+  <div id="print-title">
+    <div id="pt-row1">
+      <span id="pt-main">熱中症予防&emsp;出勤時体調チェック表</span>
+      <span id="pt-legend">※ 問題なし＝○&ensp;問題あり＝☒&ensp;（☒のときはすぐ申し出てください）</span>
+    </div>
+    <span id="print-week"></span>
+  </div>
+
   <table id="check-table"></table>
+
+</div>
+
+<!-- ====== 備考・注意書き（画面・印刷共通） ====== -->
+<div id="print-memo">
+  <span class="memo-label">備考：</span>
+  <span class="memo-line-el"></span>
+</div>
+
+<div id="print-bottom-note">
+  熱中症の症状（頭痛・めまい・吐き気・倦怠感）を感じたら、無理せずに申し出てください。
 </div>
 
 <script>
@@ -346,6 +430,10 @@
 
   function fmtDate(d) {
     return (d.getMonth() + 1) + '/' + d.getDate();
+  }
+
+  function fmtDateLong(d) {
+    return (d.getMonth() + 1) + '月' + d.getDate() + '日';
   }
 
   /* ── Week navigation ── */
@@ -422,17 +510,19 @@
       days.push(d);
     }
 
-    /* Week title */
+    /* Week titles */
     var end = days[6];
     var y   = monday.getFullYear();
-    var m1  = monday.getMonth() + 1, d1 = monday.getDate();
-    var m2  = end.getMonth()    + 1, d2 = end.getDate();
-    var title = (m1 === m2)
-      ? y + '年 ' + m1 + '月' + d1 + '日（月）〜' + d2 + '日（日）'
-      : y + '年 ' + m1 + '月' + d1 + '日（月）〜' + m2 + '月' + d2 + '日（日）';
-    document.getElementById('week-title').textContent = title;
+    var DAY_FULL = ['（日）','（月）','（火）','（水）','（木）','（金）','（土）','（日）'];
+
+    var shortTitle = y + '年 ' + (monday.getMonth()+1) + '月' + monday.getDate() + '日'
+                   + '〜' + (end.getMonth()+1) + '月' + end.getDate() + '日';
+    document.getElementById('week-title').textContent = shortTitle;
+
+    var longTitle = y + '年' + fmtDateLong(monday) + DAY_FULL[monday.getDay()]
+                  + '〜' + fmtDateLong(end) + DAY_FULL[end.getDay()];
     var pw = document.getElementById('print-week');
-    if (pw) pw.textContent = title;
+    if (pw) pw.textContent = longTitle;
 
     /* Table */
     var tbl = document.getElementById('check-table');
@@ -453,7 +543,7 @@
     addTh(hrow, 'チェック項目');
     days.forEach(function (d, i) {
       var cls = (i === 5) ? 'sat' : (i === 6) ? 'sun' : '';
-      addTh(hrow, DAY_JP[i] + '<br>' + fmtDate(d), cls);
+      addTh(hrow, fmtDate(d) + '<br>' + DAY_JP[i], cls);
     });
 
     /* Body */
@@ -464,7 +554,6 @@
         var last = (ci === ITEMS.length - 1);
         if (last) row.className = 'row-last';
 
-        /* Name cell (rowspan=3) */
         if (ci === 0) {
           var nameTd = document.createElement('td');
           nameTd.className = 'td-name';
@@ -473,13 +562,11 @@
           row.appendChild(nameTd);
         }
 
-        /* Label */
         var lbl = document.createElement('td');
         lbl.className    = 'td-label';
         lbl.textContent  = item;
         row.appendChild(lbl);
 
-        /* Box cells per day */
         days.forEach(function (_, di) {
           var td = document.createElement('td');
           td.className = 'td-box' + (di === 5 ? ' sat' : di === 6 ? ' sun' : '');
@@ -488,9 +575,8 @@
         });
       });
 
-      /* Separator row between persons */
       if (mi < members.length - 1) {
-        var sep  = tbody.insertRow();
+        var sep   = tbody.insertRow();
         var sepTd = document.createElement('td');
         sepTd.className = 'td-sep';
         sepTd.colSpan   = 2 + 7;
