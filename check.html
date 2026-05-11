@@ -222,29 +222,31 @@
 
       #table-outer { padding: 0; overflow: visible; }
 
+      /* A4 landscape 可用高 ≈ 194mm
+         28行(ヘッダ1+データ21+区切り6)をタイトル込みで収める */
       table {
         box-shadow: none;
         width: 100%;
         table-layout: fixed;
-        font-size: 7.5pt;
+        font-size: 6.5pt;
+        line-height: 1.1;
       }
 
       thead th {
-        padding: 3px 4px;
-        font-size: 7pt;
+        padding: 2px 4px;
+        font-size: 6pt;
+        line-height: 1.1;
       }
 
-      .td-name  { padding: 2px 5px; font-size: 7.5pt; }
-      .td-label { padding: 2px 5px; font-size: 6.5pt; white-space: normal; width: 18%; }
-      .td-box   { padding: 2px 3px; min-width: 0; }
+      .td-name  { padding: 1px 4px; font-size: 6.5pt; width: 12%; }
+      .td-label { padding: 1px 4px; font-size: 6pt; white-space: normal; width: 18%; }
+      .td-box   { padding: 1px 2px; min-width: 0; }
 
-      /* 名前列を固定幅に */
-      thead th:first-child,
-      .td-name { width: 12%; }
+      thead th:first-child { width: 12%; }
 
-      .td-sep { height: 2px; }
+      .td-sep { height: 1px; }
 
-      .hbox { width: 15px; height: 15px; border-color: #333; }
+      .hbox { width: 13px; height: 13px; border-color: #333; }
 
       /* 印刷タイトル */
       #print-title { display: block !important; }
@@ -253,9 +255,9 @@
     #print-title {
       display: none;
       text-align: center;
-      font-size: 11pt;
+      font-size: 9pt;
       font-weight: bold;
-      margin-bottom: 4mm;
+      margin-bottom: 2mm;
       color: #1a472a;
     }
 
